@@ -19,7 +19,7 @@ public class BOJ2675 {
         for (int k = 0; k < t; k++) {
             String[] answers = strings[k].split("");
             for (String answer : answers) {
-                System.out.print(answer.repeat(rounds[k]));
+//                System.out.print(answer.repeat(rounds[k]));
             }
             System.out.println();
         }
