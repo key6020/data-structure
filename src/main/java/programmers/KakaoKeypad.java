@@ -1,7 +1,5 @@
 package programmers;
 
-import java.util.HashMap;
-
 public class KakaoKeypad {
     public static void main(String[] args) {
         // LRLLLRLLRRL
@@ -13,92 +11,89 @@ public class KakaoKeypad {
     }
 
     public static String solution(int[] numbers, String hand) {
-        HashMap<String, Integer> distanceMap = new HashMap<>();
-        distanceMap.put("12", 1);
-        distanceMap.put("45", 1);
-        distanceMap.put("78", 1);
-        distanceMap.put("23", 1);
-        distanceMap.put("56", 1);
-        distanceMap.put("89", 1);
-        distanceMap.put("*0", 1);
-        distanceMap.put("#0", 1);
-        distanceMap.put("25", 1);
-        distanceMap.put("58", 1);
-        distanceMap.put("08", 1);
-        distanceMap.put("15", 2);
-        distanceMap.put("24", 2);
-        distanceMap.put("57", 2);
-        distanceMap.put("48", 2);
-        distanceMap.put("07", 2);
-        distanceMap.put("35", 2);
-        distanceMap.put("26", 2);
-        distanceMap.put("59", 2);
-        distanceMap.put("68", 2);
-        distanceMap.put("09", 2);
-        distanceMap.put("*8", 2);
-        distanceMap.put("#8", 2);
-        distanceMap.put("05", 2);
-        distanceMap.put("28", 2);
-        distanceMap.put("18", 3);
-        distanceMap.put("04", 3);
-        distanceMap.put("27", 3);
-        distanceMap.put("38", 3);
-        distanceMap.put("06", 3);
-        distanceMap.put("29", 3);
-        distanceMap.put("*5", 3);
-        distanceMap.put("#5", 3);
-        distanceMap.put("02", 3);
-        distanceMap.put("01", 4);
-        distanceMap.put("03", 4);
-        distanceMap.put("*2", 4);
-        distanceMap.put("#2", 4);
-
         StringBuilder sb = new StringBuilder();
+        Position left = new Position(3, 0);
+        Position right = new Position(3, 2);
+        Position numPos;
+        for (int num : numbers) {
+            numPos = getNumberPosition(num);
+            String finger = getFinger(hand, left, right, numPos);
 
-        String currentLeft = "*";
-        String currentRight = "#";
-        for (int n : numbers) {
-            if (n == 1 || n == 4 || n == 7) {
-                currentLeft = String.valueOf(n);
-                sb.append("L");
-            }
-            if (n == 3 || n == 6 || n == 9) {
-                currentRight = String.valueOf(n);
-                sb.append("R");
-            }
-            if (n == 2 || n == 5 || n == 8 || n == 0) {
-                String diffLeft;
-                String diffRight;
-                if (currentLeft.equals("*")) {
-                    diffLeft = currentLeft + n;
-                } else {
-                    diffLeft = Integer.parseInt(currentLeft) > n ? n + currentLeft : currentLeft + n;
-                }
-                if (currentRight.equals("#")) {
-                    diffRight = currentRight + n;
-                } else {
-                    diffRight = Integer.parseInt(currentRight) > n ? n + currentRight : currentRight + n;
-                }
-                if (distanceMap.get(diffLeft).equals(distanceMap.get(diffRight))) {
-                    if (hand.equalsIgnoreCase("right")) {
-                        currentRight = String.valueOf(n);
-                        sb.append("R");
-                    }
-                    if (hand.equalsIgnoreCase("left")) {
-                        currentLeft = String.valueOf(n);
-                        sb.append("L");
-                    }
-                }
-                if (distanceMap.get(diffLeft) > distanceMap.get(diffRight)) {
-                    currentRight = String.valueOf(n);
-                    sb.append("R");
-                }
-                if (distanceMap.get(diffRight) > distanceMap.get(diffLeft)) {
-                    currentLeft = String.valueOf(n);
-                    sb.append("L");
-                }
+            sb.append(finger);
+            if (finger.equals("L")) {
+                left = numPos;
+            } else {
+                right = numPos;
             }
         }
+
         return sb.toString();
+    }
+
+    private static String getFinger(String hand, Position left, Position right, Position numPos) {
+        String finger = hand.equals("right") ? "R" : "L";
+        if (numPos.col == 0) {
+            finger = "L";
+        } else if (numPos.col == 2) {
+            finger = "R";
+        } else {
+            int leftDistance = Math.abs(left.row - numPos.row) + Math.abs(left.col - numPos.col);
+            int rightDistance = Math.abs(right.row - numPos.row) + Math.abs(right.col - numPos.col);
+
+            if (leftDistance < rightDistance) {
+                finger = "L";
+            } else if (rightDistance < leftDistance) {
+                finger = "R";
+            }
+        }
+
+        return finger;
+    }
+
+    private static Position getNumberPosition(int num) {
+        Position numPos = null;
+        switch (num) {
+            case 0:
+                numPos = new Position(3, 1);
+                break;
+            case 1:
+                numPos = new Position(0, 0);
+                break;
+            case 2:
+                numPos = new Position(0, 1);
+                break;
+            case 3:
+                numPos = new Position(0, 2);
+                break;
+            case 4:
+                numPos = new Position(1, 0);
+                break;
+            case 5:
+                numPos = new Position(1, 1);
+                break;
+            case 6:
+                numPos = new Position(1, 2);
+                break;
+            case 7:
+                numPos = new Position(2, 0);
+                break;
+            case 8:
+                numPos = new Position(2, 1);
+                break;
+            case 9:
+                numPos = new Position(2, 2);
+                break;
+        }
+        return numPos;
+    }
+
+    static class Position {
+        int row;
+        int col;
+
+        Position(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
     }
 }
